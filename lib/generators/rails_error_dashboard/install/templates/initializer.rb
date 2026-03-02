@@ -152,7 +152,7 @@ RailsErrorDashboard.configure do |config|
 <% if @enable_separate_database -%>
   # Separate Error Database - ENABLED
   # Errors are stored in a dedicated database for isolation and scalability.
-  # See docs/guides/DATABASE_OPTIONS.md for setup instructions.
+  # See https://github.com/AnjanJ/rails_error_dashboard/blob/main/docs/guides/DATABASE_OPTIONS.md
   config.use_separate_database = true
   config.database = :<%= @database_name || "error_dashboard" %>
 <% if @enable_multi_app -%>
@@ -168,7 +168,7 @@ RailsErrorDashboard.configure do |config|
   # Separate Error Database - DISABLED
   # Errors are stored in your main application database.
   # To enable: Set config.use_separate_database = true and configure database.yml
-  # See docs/guides/DATABASE_OPTIONS.md for setup instructions.
+  # See https://github.com/AnjanJ/rails_error_dashboard/blob/main/docs/guides/DATABASE_OPTIONS.md
   config.use_separate_database = false
   # config.database = :error_dashboard
 

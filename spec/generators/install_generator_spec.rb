@@ -519,7 +519,7 @@ RSpec.describe RailsErrorDashboard::Generators::InstallGenerator, type: :generat
 
       it "includes setup instructions reference" do
         initializer_content = File.read("#{destination_root}/config/initializers/rails_error_dashboard.rb")
-        expect(initializer_content).to include("docs/guides/DATABASE_OPTIONS.md")
+        expect(initializer_content).to include("DATABASE_OPTIONS.md")
       end
     end
 

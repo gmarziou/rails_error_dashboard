@@ -432,9 +432,9 @@ module RailsErrorDashboard
         end
         say "\n"
         say "Documentation:", :white
-        say "   Quick Start: docs/QUICKSTART.md", :white
-        say "   Database Setup: docs/guides/DATABASE_OPTIONS.md", :white
-        say "   Complete Feature Guide: docs/FEATURES.md", :white
+        say "   Quick Start: https://github.com/AnjanJ/rails_error_dashboard/blob/main/docs/QUICKSTART.md", :white
+        say "   Database Setup: https://github.com/AnjanJ/rails_error_dashboard/blob/main/docs/guides/DATABASE_OPTIONS.md", :white
+        say "   Feature Guide: https://github.com/AnjanJ/rails_error_dashboard/blob/main/docs/FEATURES.md", :white
         say "\n"
         say "To enable/disable features later:", :white
         say "   Edit config/initializers/rails_error_dashboard.rb", :white

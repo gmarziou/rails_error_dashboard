@@ -14,7 +14,7 @@ module RailsErrorDashboard
           # the user hasn't added the database.yml entry yet.
           db_configs = ActiveRecord::Base.configurations.configs_for(env_name: Rails.env)
           unless db_configs.any? { |c| c.name == database_name.to_s }
-            Rails.logger.warn "[Rails Error Dashboard] Separate database '#{database_name}' is not configured in database.yml for the '#{Rails.env}' environment. Skipping connects_to. See docs/guides/DATABASE_OPTIONS.md"
+            Rails.logger.warn "[Rails Error Dashboard] Separate database '#{database_name}' is not configured in database.yml for the '#{Rails.env}' environment. Skipping connects_to. See https://github.com/AnjanJ/rails_error_dashboard/blob/main/docs/guides/DATABASE_OPTIONS.md"
             next
           end
 

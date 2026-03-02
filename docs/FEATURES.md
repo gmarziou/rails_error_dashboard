@@ -14,7 +14,7 @@ Core features that are always enabled - no configuration needed:
 - ✅ **Security & Privacy** - HTTP Basic Auth, data retention
 
 ### Optional Features (Opt-in)
-**17 powerful features** you can enable during installation or anytime in the initializer:
+**16 features** you can enable during installation or anytime in the initializer (plus separate database via the database mode selector):
 
 **📧 Notifications (5 features)**
 - Slack, Email, Discord, PagerDuty, Webhooks
@@ -66,14 +66,6 @@ All optional features are disabled by default and can be toggled on/off at any t
 - **App version tracking**: Git SHA and version number
 - **Stack traces** for both Ruby and JavaScript errors
 
-### Supported Frameworks
-- **React** - Error boundaries + manual logging
-- **React Native** - Global error handler + manual logging
-- **Vue.js** - Error handler + manual logging
-- **Angular** - Error handler + manual logging
-- **Flutter** - Exception handler + API integration
-- **Any frontend framework** via REST API
-
 ---
 
 ## Dashboard & UI
@@ -109,10 +101,11 @@ All optional features are disabled by default and can be toggled on/off at any t
 - **Jump to page** functionality
 - **Responsive** on mobile and desktop
 
-### Keyboard Shortcuts ⌨️
+### Keyboard Shortcuts
 - **r** - Refresh page
 - **/** - Focus search
 - **a** - Go to analytics
+- **s** - Toggle sidebar
 - **?** - Show keyboard shortcuts help
 
 ---
@@ -249,7 +242,7 @@ config.use_separate_database = true   # Separate database
 - **Background job processing** via ActiveJob
 - **Supports**:
   - Sidekiq
-  - Solid Queue (Rails 8.1+)
+  - Solid Queue
   - Async (Rails default)
   - Delayed Job
   - Resque
@@ -259,7 +252,7 @@ config.use_separate_database = true   # Separate database
 
 ### Backtrace Limiting
 - **70-90% storage reduction** with minimal information loss
-- **Configurable line limit** (default: 50 lines)
+- **Configurable line limit** (default: 100 lines)
 - **First N lines** (most relevant for debugging)
 - **Reduces database size** significantly for high-volume apps
 
@@ -487,7 +480,7 @@ config.repository_branch = ENV["REPOSITORY_BRANCH"] || "main"  # Default branch
 - **Repository pattern** via Query Objects
 
 ### Code Quality
-- **1,800+ RSpec tests** with high coverage
+- **1,900+ RSpec tests** with high coverage
 - **Multi-version testing** (Rails 7.0, 7.1, 7.2, 8.0, 8.1)
 - **Ruby 3.2, 3.3, 3.4, 4.0 support**
 - **CI/CD via GitHub Actions**
@@ -531,33 +524,6 @@ config.repository_branch = ENV["REPOSITORY_BRANCH"] || "main"  # Default branch
 
 ---
 
-## Mobile & Frontend Support
-
-### React Native
-- **Global error handler** setup guide
-- **Manual error logging** API examples
-- **Platform detection** (iOS/Android automatic)
-- **Network error handling**
-
-### Flutter
-- **Exception handler** integration
-- **HTTP client** examples for error reporting
-- **Platform detection** (iOS/Android/Web)
-
-### JavaScript Frameworks
-- **React** error boundaries
-- **Vue.js** error handlers
-- **Angular** error handlers
-- **Vanilla JS** try/catch integration
-
-### API Integration
-- **RESTful API** for logging errors
-- **JSON payload** format documented
-- **Authentication** via API tokens (configurable)
-- **Cross-domain support** with CORS
-
----
-
 ## Production Ready
 
 ### Performance
@@ -595,7 +561,7 @@ config.enable_source_code_integration = true # Source code viewer (NEW!)
 config.enable_git_blame = true               # Git blame integration (NEW!)
 ```
 
-*All code is complete and tested (1,800+ tests passing). These advanced features provide powerful insights for production debugging.*
+*All code is complete and tested (1,900+ tests passing). These advanced features provide powerful insights for production debugging.*
 
 ### Fuzzy Error Matching
 - **Find similar errors** even with different error hashes
@@ -775,11 +741,11 @@ Uses `backtrace_locations` (Ruby 2.0+) when available for richer data:
 
 ### Reduced Dependencies
 
-Core gem now requires only 2 gems: `rails` and `pagy`. Four previously-required dependencies are now optional:
+Core gem requires 4 runtime gems: `rails`, `pagy`, `groupdate`, and `concurrent-ruby`. Four previously-required dependencies are now optional:
 - `browser` — for User-Agent platform detection
-- `chartkick` — for chart rendering
-- `httparty` — for webhook/notification HTTP calls
-- `turbo-rails` — for real-time Turbo Stream updates
+- `chartkick` — for chart helpers (falls back to CDN-only JS)
+- `httparty` — for webhook/notification HTTP calls (falls back to Net::HTTP)
+- `turbo-rails` — for real-time Turbo Stream updates (falls back to page refresh)
 
 ---
 
@@ -838,7 +804,7 @@ rails generate rails_error_dashboard:install
     Enable? (y/N): n
     ✗ Disabled
 
-... (continues for all 16 features)
+... (continues for all features)
 ```
 
 **Non-Interactive Mode** (for automation/CI):

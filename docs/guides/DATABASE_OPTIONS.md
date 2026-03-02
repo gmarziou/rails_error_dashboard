@@ -159,8 +159,13 @@ production:
 ```
 
 ```bash
-# No need to create or migrate — App 1 already did that.
-# Just verify the connection:
+# The database already exists (App 1 created it).
+# If you ran the installer, you'll have migrations in db/error_dashboard_migrate/.
+# Running migrate is safe — migrations that App 1 already applied will be skipped
+# (they're tracked in the shared schema_migrations table).
+rails db:migrate:error_dashboard
+
+# Verify the connection:
 rails error_dashboard:verify
 ```
 
@@ -214,32 +219,23 @@ rails db:migrate:error_dashboard
 
 ### 3. Copy existing data
 
-Create a rake task to copy data from primary to separate database:
+Use SQL to copy data directly between databases. The gem's `connects_to` runs once at boot, so you can't switch connections at runtime via config toggles.
 
-```ruby
-# lib/tasks/migrate_errors.rake
-namespace :error_dashboard do
-  desc "Copy error data from primary to separate database"
-  task migrate_data: :environment do
-    # Temporarily read from primary
-    RailsErrorDashboard.configuration.use_separate_database = false
-    old_errors = RailsErrorDashboard::ErrorLog.all.to_a
-    puts "Found #{old_errors.count} errors in primary database"
+```bash
+# PostgreSQL example: dump from primary, restore to separate DB
+pg_dump -t 'rails_error_dashboard_*' myapp_development | psql myapp_errors_development
 
-    # Switch to separate database and insert
-    RailsErrorDashboard.configuration.use_separate_database = true
-    count = 0
-    old_errors.each_slice(1000) do |batch|
-      batch.each do |error|
-        attrs = error.attributes.except("id")
-        RailsErrorDashboard::ErrorLog.create!(attrs)
-        count += 1
-      end
-      print "."
-    end
-    puts "\nMigrated #{count} errors"
-  end
-end
+# Or use Rails dbconsole to export/import:
+# 1. Export from primary
+rails dbconsole -p < <(echo "COPY rails_error_dashboard_error_logs TO '/tmp/error_logs.csv' CSV HEADER;")
+
+# 2. Import to separate DB
+rails dbconsole --database=error_dashboard < <(echo "COPY rails_error_dashboard_error_logs FROM '/tmp/error_logs.csv' CSV HEADER;")
+```
+
+For SQLite, copy the tables using `.dump`:
+```bash
+sqlite3 db/development.sqlite3 ".dump rails_error_dashboard_error_logs" | sqlite3 db/myapp_errors_development.sqlite3
 ```
 
 ### 4. Verify and clean up
@@ -255,19 +251,27 @@ rails error_dashboard:verify
 
 When you upgrade `rails_error_dashboard` to a new version:
 
-**Single database users:**
+**Step 1: Update the gem and copy new migrations**
 ```bash
 bundle update rails_error_dashboard
+rails generate rails_error_dashboard:install
+```
+
+Re-running the installer is safe — it skips migrations you already have and only copies new ones from the updated gem. Your existing initializer and routes are not overwritten.
+
+**Step 2: Run the new migrations**
+
+Single database users:
+```bash
 rails db:migrate
 ```
 
-**Separate database users:**
+Separate database users:
 ```bash
-bundle update rails_error_dashboard
 rails db:migrate:error_dashboard
 ```
 
-**Multi-app users:** Only one app needs to run migrations. The shared database schema is updated once — all other apps will use the new schema automatically.
+**Multi-app users:** Only one app needs to run migrations. The shared database schema is updated once — all other apps will use the new schema automatically. However, all apps should re-run the installer to get the new migration files (in case they need to run migrations in the future).
 
 ---
 

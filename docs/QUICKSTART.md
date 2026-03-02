@@ -5,7 +5,7 @@ Get Rails Error Dashboard up and running in 5 minutes!
 ## Prerequisites
 
 - Rails 7.0 or later (supports 7.0, 7.1, 7.2, 8.0, 8.1)
-- Ruby 3.2 or later (supports 3.2, 3.3, 3.4)
+- Ruby 3.2 or later (supports 3.2, 3.3, 3.4, 4.0)
 - SQLite, PostgreSQL, or MySQL database
 
 ## Installation
@@ -26,7 +26,7 @@ rails db:migrate
 
 ### Interactive Feature Selection
 
-The installer will guide you through **17 optional features** organized in 4 categories:
+The installer will guide you through **optional features** organized in 4 categories:
 
 **Notifications (5 features)**
 - Slack - Real-time error notifications to Slack channels
@@ -123,7 +123,7 @@ class HomeController < ApplicationController
 end
 ```
 
-Visit the route and check `/errors` - you should see your test error!
+Visit the route and check `/error_dashboard` - you should see your test error!
 
 ### Configure Basic Settings
 
@@ -231,20 +231,20 @@ config.enable_similar_errors = true
 config.enable_platform_comparison = true
 ```
 
-See the [Complete Configuration Guide](guides/CONFIGURATION.md) for all 16+ configuration options.
+See the [Complete Configuration Guide](guides/CONFIGURATION.md) for all configuration options.
 
 ## Common Tasks
 
 ### Resolve an Error
 
-1. Go to `/errors`
+1. Go to `/error_dashboard`
 2. Click on an error
 3. Click "Mark as Resolved"
 4. Add a resolution comment (optional)
 
 ### Batch Delete Errors
 
-1. Go to `/errors`
+1. Go to `/error_dashboard`
 2. Select errors using checkboxes
 3. Click "Bulk Actions" → "Delete Selected"
 
@@ -275,8 +275,8 @@ Now that you have the basics working:
 
 **Fix**:
 ```bash
-# Re-run migrations
-rails rails_error_dashboard:install:migrations
+# Re-run the installer to copy migrations, then migrate
+rails generate rails_error_dashboard:install
 rails db:migrate
 ```
 
@@ -309,14 +309,15 @@ rails server
 
 ### "Errors not capturing automatically"
 
-**Check middleware is installed**:
+The middleware and error subscriber are installed automatically by the engine. Check that they're enabled in your initializer:
 
 ```ruby
-# config/application.rb
-config.middleware.use RailsErrorDashboard::Middleware::ErrorCatcher
+# config/initializers/rails_error_dashboard.rb
+config.enable_middleware = true
+config.enable_error_subscriber = true
 ```
 
-**Or install manually**:
+**Re-run the installer if needed**:
 ```bash
 rails generate rails_error_dashboard:install
 ```
@@ -355,8 +356,8 @@ config.async_adapter = :solid_queue
 Large backtraces slow down the database:
 
 ```ruby
-config.max_backtrace_lines = 50  # Default, good for most cases
-config.max_backtrace_lines = 20  # Smaller for high-volume apps
+config.max_backtrace_lines = 100  # Default
+config.max_backtrace_lines = 50   # Smaller for high-volume apps
 ```
 
 ### Sample Errors
@@ -375,7 +376,7 @@ Before deploying to production:
 - [ ] Enable async logging (`async_logging = true`)
 - [ ] Set up notifications (Slack, Email, PagerDuty)
 - [ ] Configure custom severity rules
-- [ ] Set backtrace limit (`max_backtrace_lines`)
+- [ ] Set backtrace limit (`max_backtrace_lines`, default: 100)
 - [ ] Consider sampling for high-traffic apps
 - [ ] Test error notifications
 - [ ] Set up database backups
